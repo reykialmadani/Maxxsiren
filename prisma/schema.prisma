@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  supabaseId  String   @unique
+  nama        String
+  email       String   @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  barangMasuk  BarangMasuk[]
+  barangKeluar BarangKeluar[]
+}
+
+model Kategori {
+  id        String   @id @default(cuid())
+  nama      String   @unique
+  barang    Barang[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Barang {
+  id          String    @id @default(cuid())
+  kode        String    @unique
+  namaBarang  String
+  kategoriId  String
+  kategori    Kategori  @relation(fields: [kategoriId], references: [id])
+  stok        Int       @default(0)
+  minStok     Int       @default(0)
+  satuan      String
+  deletedAt   DateTime?
+
+  barangMasuk  BarangMasuk[]
+  barangKeluar BarangKeluar[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BarangMasuk {
+  id         String   @id @default(cuid())
+  barangId   String
+  barang     Barang   @relation(fields: [barangId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  jumlah     Int
+  keterangan String?
+  createdAt  DateTime @default(now())
+}
+
+model BarangKeluar {
+  id         String   @id @default(cuid())
+  barangId   String
+  barang     Barang   @relation(fields: [barangId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  jumlah     Int
+  keterangan String?
+  createdAt  DateTime @default(now())
+}
