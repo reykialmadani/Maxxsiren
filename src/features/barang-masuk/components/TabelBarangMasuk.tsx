@@ -1,9 +1,10 @@
 "use client"
 
 import type { Prisma } from "@prisma/client"
-import { Plus, Search, X } from "lucide-react"
+import { Plus, Search, Trash2, X } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useState, useTransition } from "react"
+import { toast } from "sonner"
 import { DataTable } from "@/components/common/DataTable"
 import { EmptyState } from "@/components/common/EmptyState"
 import { Pagination } from "@/components/common/Pagination"
@@ -24,6 +25,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
+import { hapusBarangMasuk } from "@/features/barang-masuk/actions/barang-masuk.actions"
 import { formatWaktu } from "@/lib/utils"
 import { FormBarangMasuk } from "./FormBarangMasuk"
 
@@ -31,15 +33,12 @@ type RiwayatItem = Prisma.BarangMasukGetPayload<{
 	include: {
 		barang: { select: { kode: true; namaBarang: true; deletedAt: true } }
 		user: { select: { nama: true } }
+		supplier: { select: { nama: true } }
 	}
 }>
 
-type BarangOption = {
-	id: string
-	kode: string
-	namaBarang: string
-	stok: number
-}
+type BarangOption = { id: string; kode: string; namaBarang: string; stok: number }
+type SupplierOption = { id: string; nama: string }
 
 type TabelBarangMasukProps = {
 	data: RiwayatItem[]
@@ -49,6 +48,7 @@ type TabelBarangMasukProps = {
 	totalPages: number
 	search: string
 	barangList: BarangOption[]
+	supplierList: SupplierOption[]
 }
 
 export function TabelBarangMasuk({
@@ -59,6 +59,7 @@ export function TabelBarangMasuk({
 	totalPages,
 	search,
 	barangList,
+	supplierList,
 }: TabelBarangMasukProps) {
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -120,11 +121,15 @@ export function TabelBarangMasuk({
 							Catat Barang Masuk
 						</Button>
 					</DialogTrigger>
-					<DialogContent>
+					<DialogContent className="max-w-lg">
 						<DialogHeader>
 							<DialogTitle>Catat Barang Masuk</DialogTitle>
 						</DialogHeader>
-						<FormBarangMasuk barangList={barangList} onSuccess={() => setOpen(false)} />
+						<FormBarangMasuk
+							barangList={barangList}
+							supplierList={supplierList}
+							onSuccess={() => setOpen(false)}
+						/>
 					</DialogContent>
 				</Dialog>
 			</div>
@@ -137,13 +142,13 @@ export function TabelBarangMasuk({
 								No
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Waktu
+								Tanggal
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Kode
+								Supplier
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Nama Barang
+								Barang
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
 								Jumlah
@@ -154,12 +159,15 @@ export function TabelBarangMasuk({
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 								Dicatat oleh
 							</TableHead>
+							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
+								Aksi
+							</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{data.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={7}>
+								<TableCell colSpan={8}>
 									<EmptyState message="Belum ada riwayat barang masuk" />
 								</TableCell>
 							</TableRow>
@@ -168,9 +176,9 @@ export function TabelBarangMasuk({
 								<TableRow key={item.id} className="hover:bg-surface-raised">
 									<TableCell className="text-sm">{(page - 1) * pageSize + index + 1}</TableCell>
 									<TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-										{formatWaktu(item.createdAt)}
+										{formatWaktu(item.tanggalMasuk)}
 									</TableCell>
-									<TableCell className="text-sm font-mono">{item.barang.kode}</TableCell>
+									<TableCell className="text-sm">{item.supplier.nama}</TableCell>
 									<TableCell className="text-sm font-medium">
 										{item.barang.namaBarang}
 										{item.barang.deletedAt && (
@@ -184,6 +192,9 @@ export function TabelBarangMasuk({
 										{item.keterangan ?? "-"}
 									</TableCell>
 									<TableCell className="text-sm text-muted-foreground">{item.user.nama}</TableCell>
+									<TableCell className="text-right">
+										<HapusButton id={item.id} />
+									</TableCell>
 								</TableRow>
 							))
 						)}
@@ -200,5 +211,34 @@ export function TabelBarangMasuk({
 				/>
 			</DataTable>
 		</div>
+	)
+}
+
+function HapusButton({ id }: { id: string }) {
+	const [isPending, startTransition] = useTransition()
+
+	function handleHapus() {
+		if (!confirm("Batalkan transaksi ini? Stok akan di-reverse.")) return
+		startTransition(async () => {
+			const result = await hapusBarangMasuk(id)
+			if (result.success) {
+				toast.success("Transaksi berhasil dibatalkan")
+			} else {
+				toast.error(result.error)
+			}
+		})
+	}
+
+	return (
+		<Button
+			variant="ghost"
+			size="icon"
+			className="h-8 w-8"
+			disabled={isPending}
+			onClick={handleHapus}
+			aria-label="Batalkan transaksi"
+		>
+			<Trash2 className="h-4 w-4 text-muted-foreground hover:text-danger" />
+		</Button>
 	)
 }

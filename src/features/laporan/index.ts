@@ -1,20 +1,8 @@
 // Components
 export { FormFilterLaporan } from "./components/FormFilterLaporan"
-export {
-	generateLaporanBarangKeluarExcel,
-	generateLaporanBarangMasukExcel,
-	generateLaporanStokExcel,
-} from "./generators/excel.generator"
+export { generateLaporanKeluarExcel, generateLaporanMasukExcel } from "./generators/excel.generator"
 
 // Generators
-export {
-	generateLaporanBarangKeluarPdf,
-	generateLaporanBarangMasukPdf,
-	generateLaporanStokPdf,
-} from "./generators/pdf.generator"
+export { generateLaporanKeluarPdf, generateLaporanMasukPdf } from "./generators/pdf.generator"
 // Queries
-export {
-	getLaporanBarangKeluar,
-	getLaporanBarangMasuk,
-	getLaporanStokSaatIni,
-} from "./queries/laporan.queries"
+export { getLaporanKeluarData, getLaporanMasukData } from "./queries/laporan.queries"

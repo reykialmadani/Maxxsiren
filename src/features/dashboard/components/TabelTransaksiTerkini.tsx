@@ -1,4 +1,4 @@
-import { ArrowDownToLine, ArrowUpFromLine, Clock } from "lucide-react"
+import { ArrowDownToLine, ArrowUpFromLine, Clock, RotateCcw } from "lucide-react"
 import { DataTable } from "@/components/common/DataTable"
 import { EmptyState } from "@/components/common/EmptyState"
 import {
@@ -14,6 +14,47 @@ import { formatWaktu } from "@/lib/utils"
 
 type TabelTransaksiTerkiniProps = {
 	data: TransaksiTerkiniItem[]
+}
+
+function getTipeLabel(tipe: TransaksiTerkiniItem["tipe"]) {
+	switch (tipe) {
+		case "masuk":
+			return (
+				<span className="inline-flex items-center gap-1 text-xs font-medium text-success">
+					<ArrowDownToLine className="h-3 w-3" />
+					Masuk
+				</span>
+			)
+		case "keluar":
+			return (
+				<span className="inline-flex items-center gap-1 text-xs font-medium text-danger">
+					<ArrowUpFromLine className="h-3 w-3" />
+					Keluar
+				</span>
+			)
+		case "retur-masuk":
+			return (
+				<span className="inline-flex items-center gap-1 text-xs font-medium text-success">
+					<RotateCcw className="h-3 w-3" />
+					Retur +
+				</span>
+			)
+		case "retur-keluar":
+			return (
+				<span className="inline-flex items-center gap-1 text-xs font-medium text-danger">
+					<RotateCcw className="h-3 w-3" />
+					Retur −
+				</span>
+			)
+	}
+}
+
+function getJumlahColor(tipe: TransaksiTerkiniItem["tipe"]) {
+	return tipe === "masuk" || tipe === "retur-masuk" ? "text-success" : "text-danger"
+}
+
+function getJumlahPrefix(tipe: TransaksiTerkiniItem["tipe"]) {
+	return tipe === "masuk" || tipe === "retur-masuk" ? "+" : "\u2212"
 }
 
 export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
@@ -40,7 +81,7 @@ export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
 								Jumlah
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Dicatat oleh
+								Oleh
 							</TableHead>
 						</TableRow>
 					</TableHeader>
@@ -50,7 +91,7 @@ export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
 								<TableCell colSpan={5}>
 									<EmptyState
 										message="Belum ada transaksi"
-										description="Transaksi barang masuk dan keluar akan muncul di sini"
+										description="Transaksi barang masuk, keluar, dan retur akan muncul di sini"
 									/>
 								</TableCell>
 							</TableRow>
@@ -60,19 +101,7 @@ export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
 									<TableCell className="text-sm text-muted-foreground whitespace-nowrap">
 										{formatWaktu(item.createdAt)}
 									</TableCell>
-									<TableCell>
-										{item.tipe === "masuk" ? (
-											<span className="inline-flex items-center gap-1 text-xs font-medium text-success">
-												<ArrowDownToLine className="h-3 w-3" />
-												Masuk
-											</span>
-										) : (
-											<span className="inline-flex items-center gap-1 text-xs font-medium text-danger">
-												<ArrowUpFromLine className="h-3 w-3" />
-												Keluar
-											</span>
-										)}
-									</TableCell>
+									<TableCell>{getTipeLabel(item.tipe)}</TableCell>
 									<TableCell className="text-sm font-medium">
 										{item.barang.namaBarang}
 										{item.barang.deletedAt && (
@@ -80,8 +109,8 @@ export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
 										)}
 									</TableCell>
 									<TableCell className="text-sm text-right font-medium">
-										<span className={item.tipe === "masuk" ? "text-success" : "text-danger"}>
-											{item.tipe === "masuk" ? "+" : "−"}
+										<span className={getJumlahColor(item.tipe)}>
+											{getJumlahPrefix(item.tipe)}
 											{item.jumlah}
 										</span>
 									</TableCell>

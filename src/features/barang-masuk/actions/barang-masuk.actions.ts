@@ -27,8 +27,10 @@ export async function tambahBarangMasuk(formData: unknown): Promise<ActionResult
 			data: {
 				barangId: parsed.data.barangId,
 				userId: user.id,
+				supplierId: parsed.data.supplierId,
 				jumlah: parsed.data.jumlah,
 				keterangan: parsed.data.keterangan,
+				tanggalMasuk: new Date(parsed.data.tanggalMasuk),
 			},
 		})
 		await tx.barang.update({
@@ -41,4 +43,49 @@ export async function tambahBarangMasuk(formData: unknown): Promise<ActionResult
 	revalidatePath("/dashboard/stok")
 	revalidatePath("/dashboard/barang")
 	return { success: true, data: undefined }
+}
+
+export async function hapusBarangMasuk(id: string): Promise<ActionResult> {
+	await requireAuth()
+
+	try {
+		await prisma.$transaction(async (tx) => {
+			const masuk = await tx.barangMasuk.findUnique({ where: { id } })
+			if (!masuk || masuk.deletedAt) {
+				throw new Error("Transaksi tidak ditemukan atau sudah dihapus")
+			}
+
+			const barang = await tx.barang.findUnique({
+				where: { id: masuk.barangId },
+				select: { stok: true },
+			})
+			if (!barang || barang.stok < masuk.jumlah) {
+				throw new Error("Tidak dapat membatalkan: stok tidak mencukupi untuk di-reverse")
+			}
+
+			await tx.barangMasuk.update({
+				where: { id },
+				data: { deletedAt: new Date() },
+			})
+			await tx.barang.update({
+				where: { id: masuk.barangId },
+				data: { stok: { decrement: masuk.jumlah } },
+			})
+		})
+
+		revalidatePath("/dashboard/barang-masuk")
+		revalidatePath("/dashboard/stok")
+		revalidatePath("/dashboard/barang")
+		return { success: true, data: undefined }
+	} catch (err) {
+		if (err instanceof Error) {
+			if (
+				err.message.startsWith("Tidak dapat membatalkan") ||
+				err.message.startsWith("Transaksi tidak ditemukan")
+			) {
+				return { success: false, error: err.message }
+			}
+		}
+		throw err
+	}
 }

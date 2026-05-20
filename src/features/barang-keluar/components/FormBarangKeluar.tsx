@@ -18,12 +18,7 @@ import {
 import { tambahBarangKeluar } from "@/features/barang-keluar/actions/barang-keluar.actions"
 import { type BarangKeluarInput, barangKeluarSchema } from "@/lib/validations/barang-keluar.schema"
 
-type BarangOption = {
-	id: string
-	kode: string
-	namaBarang: string
-	stok: number
-}
+type BarangOption = { id: string; kode: string; namaBarang: string; stok: number }
 
 type FormBarangKeluarProps = {
 	barangList: BarangOption[]
@@ -40,11 +35,7 @@ export function FormBarangKeluar({ barangList, onSuccess }: FormBarangKeluarProp
 		formState: { errors },
 	} = useForm<BarangKeluarInput>({
 		resolver: zodResolver(barangKeluarSchema),
-		defaultValues: {
-			barangId: "",
-			jumlah: undefined,
-			keterangan: "",
-		},
+		defaultValues: { barangId: "", namaPenerima: "", jumlah: undefined, keterangan: "" },
 	})
 
 	const barangId = watch("barangId")
@@ -73,14 +64,12 @@ export function FormBarangKeluar({ barangList, onSuccess }: FormBarangKeluarProp
 			</div>
 
 			<div className="flex flex-col gap-1.5">
-				<Label htmlFor="barangId" className="text-sm font-medium">
-					Barang
-				</Label>
+				<Label className="text-sm font-medium">Barang</Label>
 				<Select
 					value={barangId}
-					onValueChange={(value) => setValue("barangId", value, { shouldValidate: true })}
+					onValueChange={(v) => setValue("barangId", v, { shouldValidate: true })}
 				>
-					<SelectTrigger id="barangId">
+					<SelectTrigger>
 						<SelectValue placeholder="Pilih barang" />
 					</SelectTrigger>
 					<SelectContent>
@@ -100,28 +89,51 @@ export function FormBarangKeluar({ barangList, onSuccess }: FormBarangKeluarProp
 			</div>
 
 			<div className="flex flex-col gap-1.5">
-				<Label htmlFor="jumlah" className="text-sm font-medium">
-					Jumlah
+				<Label htmlFor="namaPenerima" className="text-sm font-medium">
+					Nama Penerima / Bagian
 				</Label>
 				<Input
-					id="jumlah"
-					type="number"
-					min={1}
-					max={selectedBarang?.stok}
-					placeholder="Masukkan jumlah"
-					{...register("jumlah", { valueAsNumber: true })}
+					id="namaPenerima"
+					placeholder="Nama penerima atau bagian tujuan"
+					{...register("namaPenerima")}
 				/>
-				{errors.jumlah && <p className="text-xs text-danger mt-1">{errors.jumlah.message}</p>}
+				{errors.namaPenerima && (
+					<p className="text-xs text-danger mt-1">{errors.namaPenerima.message}</p>
+				)}
+			</div>
+
+			<div className="grid grid-cols-2 gap-4">
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor="jumlah" className="text-sm font-medium">
+						Jumlah
+					</Label>
+					<Input
+						id="jumlah"
+						type="number"
+						min={1}
+						max={selectedBarang?.stok}
+						placeholder="0"
+						{...register("jumlah", { valueAsNumber: true })}
+					/>
+					{errors.jumlah && <p className="text-xs text-danger mt-1">{errors.jumlah.message}</p>}
+				</div>
+
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor="tanggalKeluar" className="text-sm font-medium">
+						Tanggal Keluar
+					</Label>
+					<Input id="tanggalKeluar" type="date" {...register("tanggalKeluar")} />
+					{errors.tanggalKeluar && (
+						<p className="text-xs text-danger mt-1">{errors.tanggalKeluar.message}</p>
+					)}
+				</div>
 			</div>
 
 			<div className="flex flex-col gap-1.5">
 				<Label htmlFor="keterangan" className="text-sm font-medium">
 					Keterangan <span className="text-muted-foreground">(opsional)</span>
 				</Label>
-				<Input id="keterangan" placeholder="Contoh: Penjualan retail" {...register("keterangan")} />
-				{errors.keterangan && (
-					<p className="text-xs text-danger mt-1">{errors.keterangan.message}</p>
-				)}
+				<Input id="keterangan" placeholder="Keterangan tambahan" {...register("keterangan")} />
 			</div>
 
 			<Button type="submit" disabled={isPending} className="w-full">

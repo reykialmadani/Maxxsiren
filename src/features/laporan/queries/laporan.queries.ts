@@ -5,62 +5,99 @@ export type LaporanFilter = {
 	dateTo: Date
 }
 
-export async function getLaporanBarangMasuk(filter: LaporanFilter) {
-	return prisma.barangMasuk.findMany({
-		where: {
-			createdAt: {
-				gte: filter.dateFrom,
-				lte: filter.dateTo,
+export async function getLaporanMasukData(filter: LaporanFilter) {
+	const [barangMasuk, returMasuk] = await Promise.all([
+		prisma.barangMasuk.findMany({
+			where: {
+				deletedAt: null,
+				tanggalMasuk: { gte: filter.dateFrom, lte: filter.dateTo },
 			},
-		},
-		include: {
-			barang: {
-				select: {
-					kode: true,
-					namaBarang: true,
-					satuan: true,
-					kategori: { select: { nama: true } },
-					deletedAt: true,
+			include: {
+				barang: {
+					select: {
+						kode: true,
+						namaBarang: true,
+						satuan: true,
+						kategori: { select: { nama: true } },
+						deletedAt: true,
+					},
 				},
+				supplier: { select: { nama: true } },
+				user: { select: { nama: true } },
 			},
-			user: { select: { nama: true } },
-		},
-		orderBy: { createdAt: "asc" },
-	})
-}
-
-export async function getLaporanBarangKeluar(filter: LaporanFilter) {
-	return prisma.barangKeluar.findMany({
-		where: {
-			createdAt: {
-				gte: filter.dateFrom,
-				lte: filter.dateTo,
+			orderBy: { tanggalMasuk: "asc" },
+		}),
+		prisma.retur.findMany({
+			where: {
+				tipe: "MASUK",
+				deletedAt: null,
+				tanggalRetur: { gte: filter.dateFrom, lte: filter.dateTo },
 			},
-		},
-		include: {
-			barang: {
-				select: {
-					kode: true,
-					namaBarang: true,
-					satuan: true,
-					kategori: { select: { nama: true } },
-					deletedAt: true,
+			include: {
+				barang: {
+					select: {
+						kode: true,
+						namaBarang: true,
+						satuan: true,
+						kategori: { select: { nama: true } },
+						deletedAt: true,
+					},
 				},
+				user: { select: { nama: true } },
 			},
-			user: { select: { nama: true } },
-		},
-		orderBy: { createdAt: "asc" },
-	})
+			orderBy: { tanggalRetur: "asc" },
+		}),
+	])
+
+	return { barangMasuk, returMasuk }
 }
 
-export async function getLaporanStokSaatIni() {
-	return prisma.barang.findMany({
-		where: { deletedAt: null },
-		include: { kategori: { select: { nama: true } } },
-		orderBy: { namaBarang: "asc" },
-	})
+export async function getLaporanKeluarData(filter: LaporanFilter) {
+	const [barangKeluar, returKeluar] = await Promise.all([
+		prisma.barangKeluar.findMany({
+			where: {
+				deletedAt: null,
+				tanggalKeluar: { gte: filter.dateFrom, lte: filter.dateTo },
+			},
+			include: {
+				barang: {
+					select: {
+						kode: true,
+						namaBarang: true,
+						satuan: true,
+						kategori: { select: { nama: true } },
+						deletedAt: true,
+					},
+				},
+				user: { select: { nama: true } },
+			},
+			orderBy: { tanggalKeluar: "asc" },
+		}),
+		prisma.retur.findMany({
+			where: {
+				tipe: "KELUAR",
+				deletedAt: null,
+				tanggalRetur: { gte: filter.dateFrom, lte: filter.dateTo },
+			},
+			include: {
+				barang: {
+					select: {
+						kode: true,
+						namaBarang: true,
+						satuan: true,
+						kategori: { select: { nama: true } },
+						deletedAt: true,
+					},
+				},
+				supplier: { select: { nama: true } },
+				user: { select: { nama: true } },
+			},
+			orderBy: { tanggalRetur: "asc" },
+		}),
+	])
+
+	return { barangKeluar, returKeluar }
 }
 
-export type LaporanBarangMasukItem = Awaited<ReturnType<typeof getLaporanBarangMasuk>>[number]
-export type LaporanBarangKeluarItem = Awaited<ReturnType<typeof getLaporanBarangKeluar>>[number]
-export type LaporanStokItem = Awaited<ReturnType<typeof getLaporanStokSaatIni>>[number]
+export type LaporanMasukData = Awaited<ReturnType<typeof getLaporanMasukData>>
+export type LaporanKeluarData = Awaited<ReturnType<typeof getLaporanKeluarData>>

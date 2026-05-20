@@ -36,6 +36,7 @@ export default async function DashboardPage() {
 				totalJenisBarang={summary.totalJenisBarang}
 				totalStok={summary.totalStok}
 				stokRendah={summary.stokRendah}
+				totalSupplier={summary.totalSupplier}
 				transaksiHariIni={summary.transaksiHariIni}
 			/>
 

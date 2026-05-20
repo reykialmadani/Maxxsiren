@@ -18,19 +18,16 @@ import {
 import { tambahBarangMasuk } from "@/features/barang-masuk/actions/barang-masuk.actions"
 import { type BarangMasukInput, barangMasukSchema } from "@/lib/validations/barang-masuk.schema"
 
-type BarangOption = {
-	id: string
-	kode: string
-	namaBarang: string
-	stok: number
-}
+type BarangOption = { id: string; kode: string; namaBarang: string; stok: number }
+type SupplierOption = { id: string; nama: string }
 
 type FormBarangMasukProps = {
 	barangList: BarangOption[]
+	supplierList: SupplierOption[]
 	onSuccess: () => void
 }
 
-export function FormBarangMasuk({ barangList, onSuccess }: FormBarangMasukProps) {
+export function FormBarangMasuk({ barangList, supplierList, onSuccess }: FormBarangMasukProps) {
 	const [isPending, startTransition] = useTransition()
 	const {
 		register,
@@ -40,14 +37,11 @@ export function FormBarangMasuk({ barangList, onSuccess }: FormBarangMasukProps)
 		formState: { errors },
 	} = useForm<BarangMasukInput>({
 		resolver: zodResolver(barangMasukSchema),
-		defaultValues: {
-			barangId: "",
-			jumlah: undefined,
-			keterangan: "",
-		},
+		defaultValues: { barangId: "", supplierId: "", jumlah: undefined, keterangan: "" },
 	})
 
 	const barangId = watch("barangId")
+	const supplierId = watch("supplierId")
 
 	function onSubmit(data: BarangMasukInput) {
 		startTransition(async () => {
@@ -72,14 +66,34 @@ export function FormBarangMasuk({ barangList, onSuccess }: FormBarangMasukProps)
 			</div>
 
 			<div className="flex flex-col gap-1.5">
-				<Label htmlFor="barangId" className="text-sm font-medium">
-					Barang
-				</Label>
+				<Label className="text-sm font-medium">Supplier</Label>
+				<Select
+					value={supplierId}
+					onValueChange={(v) => setValue("supplierId", v, { shouldValidate: true })}
+				>
+					<SelectTrigger>
+						<SelectValue placeholder="Pilih supplier" />
+					</SelectTrigger>
+					<SelectContent>
+						{supplierList.map((s) => (
+							<SelectItem key={s.id} value={s.id}>
+								{s.nama}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+				{errors.supplierId && (
+					<p className="text-xs text-danger mt-1">{errors.supplierId.message}</p>
+				)}
+			</div>
+
+			<div className="flex flex-col gap-1.5">
+				<Label className="text-sm font-medium">Barang</Label>
 				<Select
 					value={barangId}
-					onValueChange={(value) => setValue("barangId", value, { shouldValidate: true })}
+					onValueChange={(v) => setValue("barangId", v, { shouldValidate: true })}
 				>
-					<SelectTrigger id="barangId">
+					<SelectTrigger>
 						<SelectValue placeholder="Pilih barang" />
 					</SelectTrigger>
 					<SelectContent>
@@ -93,32 +107,37 @@ export function FormBarangMasuk({ barangList, onSuccess }: FormBarangMasukProps)
 				{errors.barangId && <p className="text-xs text-danger mt-1">{errors.barangId.message}</p>}
 			</div>
 
-			<div className="flex flex-col gap-1.5">
-				<Label htmlFor="jumlah" className="text-sm font-medium">
-					Jumlah
-				</Label>
-				<Input
-					id="jumlah"
-					type="number"
-					min={1}
-					placeholder="Masukkan jumlah"
-					{...register("jumlah", { valueAsNumber: true })}
-				/>
-				{errors.jumlah && <p className="text-xs text-danger mt-1">{errors.jumlah.message}</p>}
+			<div className="grid grid-cols-2 gap-4">
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor="jumlah" className="text-sm font-medium">
+						Jumlah
+					</Label>
+					<Input
+						id="jumlah"
+						type="number"
+						min={1}
+						placeholder="0"
+						{...register("jumlah", { valueAsNumber: true })}
+					/>
+					{errors.jumlah && <p className="text-xs text-danger mt-1">{errors.jumlah.message}</p>}
+				</div>
+
+				<div className="flex flex-col gap-1.5">
+					<Label htmlFor="tanggalMasuk" className="text-sm font-medium">
+						Tanggal Masuk
+					</Label>
+					<Input id="tanggalMasuk" type="date" {...register("tanggalMasuk")} />
+					{errors.tanggalMasuk && (
+						<p className="text-xs text-danger mt-1">{errors.tanggalMasuk.message}</p>
+					)}
+				</div>
 			</div>
 
 			<div className="flex flex-col gap-1.5">
 				<Label htmlFor="keterangan" className="text-sm font-medium">
 					Keterangan <span className="text-muted-foreground">(opsional)</span>
 				</Label>
-				<Input
-					id="keterangan"
-					placeholder="Contoh: Restock dari supplier utama"
-					{...register("keterangan")}
-				/>
-				{errors.keterangan && (
-					<p className="text-xs text-danger mt-1">{errors.keterangan.message}</p>
-				)}
+				<Input id="keterangan" placeholder="Keterangan tambahan" {...register("keterangan")} />
 			</div>
 
 			<Button type="submit" disabled={isPending} className="w-full">

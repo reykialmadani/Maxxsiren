@@ -8,6 +8,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum TipeRetur {
+  MASUK
+  KELUAR
+}
+
 model User {
   id          String   @id @default(cuid())
   supabaseId  String   @unique
@@ -19,6 +24,7 @@ model User {
 
   barangMasuk  BarangMasuk[]
   barangKeluar BarangKeluar[]
+  retur        Retur[]
 }
 
 model Kategori {
@@ -42,29 +48,77 @@ model Barang {
 
   barangMasuk  BarangMasuk[]
   barangKeluar BarangKeluar[]
+  retur        Retur[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Supplier {
+  id        String   @id @default(cuid())
+  nama      String
+  telepon   String
+  alamat    String
+
+  barangMasuk BarangMasuk[]
+  retur       Retur[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BarangMasuk {
-  id         String   @id @default(cuid())
-  barangId   String
-  barang     Barang   @relation(fields: [barangId], references: [id])
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  jumlah     Int
-  keterangan String?
-  createdAt  DateTime @default(now())
+  id           String    @id @default(cuid())
+  barangId     String
+  barang       Barang    @relation(fields: [barangId], references: [id])
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  supplierId   String
+  supplier     Supplier  @relation(fields: [supplierId], references: [id])
+  jumlah       Int
+  keterangan   String?
+  tanggalMasuk DateTime
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([deletedAt, createdAt])
+  @@index([tanggalMasuk])
 }
 
 model BarangKeluar {
-  id         String   @id @default(cuid())
-  barangId   String
-  barang     Barang   @relation(fields: [barangId], references: [id])
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  jumlah     Int
-  keterangan String?
-  createdAt  DateTime @default(now())
+  id            String    @id @default(cuid())
+  barangId      String
+  barang        Barang    @relation(fields: [barangId], references: [id])
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  namaPenerima  String
+  jumlah        Int
+  keterangan    String?
+  tanggalKeluar DateTime
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([deletedAt, createdAt])
+  @@index([tanggalKeluar])
+}
+
+model Retur {
+  id           String    @id @default(cuid())
+  tipe         TipeRetur
+  barangId     String
+  barang       Barang    @relation(fields: [barangId], references: [id])
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  jumlah       Int
+  keterangan   String?
+  tanggalRetur DateTime
+  supplierId   String?
+  supplier     Supplier? @relation(fields: [supplierId], references: [id])
+  namaPenerima String?
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([deletedAt, createdAt])
+  @@index([tipe])
+  @@index([tanggalRetur])
 }

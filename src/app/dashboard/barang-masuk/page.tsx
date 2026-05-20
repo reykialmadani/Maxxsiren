@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/common/PageHeader"
 import { getBarangForSelect } from "@/features/barang/queries/barang.queries"
 import { TabelBarangMasuk } from "@/features/barang-masuk/components/TabelBarangMasuk"
 import { getRiwayatBarangMasuk } from "@/features/barang-masuk/queries/barang-masuk.queries"
+import { getSupplierForSelect } from "@/features/supplier/queries/supplier.queries"
 
 type BarangMasukPageProps = {
 	searchParams: Promise<{
@@ -18,9 +19,10 @@ export default async function BarangMasukPage({ searchParams }: BarangMasukPageP
 	const pageSize = Number(params.pageSize ?? 10)
 	const search = params.search ?? ""
 
-	const [result, barangList] = await Promise.all([
+	const [result, barangList, supplierList] = await Promise.all([
 		getRiwayatBarangMasuk(page, pageSize, search || undefined),
 		getBarangForSelect(),
+		getSupplierForSelect(),
 	])
 
 	return (
@@ -38,6 +40,7 @@ export default async function BarangMasukPage({ searchParams }: BarangMasukPageP
 				totalPages={result.totalPages}
 				search={search}
 				barangList={barangList}
+				supplierList={supplierList}
 			/>
 		</div>
 	)

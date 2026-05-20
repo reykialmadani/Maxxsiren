@@ -1,9 +1,10 @@
 "use client"
 
 import type { Prisma } from "@prisma/client"
-import { Plus, Search, X } from "lucide-react"
+import { Plus, Search, Trash2, X } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useState, useTransition } from "react"
+import { toast } from "sonner"
 import { DataTable } from "@/components/common/DataTable"
 import { EmptyState } from "@/components/common/EmptyState"
 import { Pagination } from "@/components/common/Pagination"
@@ -24,6 +25,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
+import { hapusBarangKeluar } from "@/features/barang-keluar/actions/barang-keluar.actions"
 import { formatWaktu } from "@/lib/utils"
 import { FormBarangKeluar } from "./FormBarangKeluar"
 
@@ -34,12 +36,7 @@ type RiwayatItem = Prisma.BarangKeluarGetPayload<{
 	}
 }>
 
-type BarangOption = {
-	id: string
-	kode: string
-	namaBarang: string
-	stok: number
-}
+type BarangOption = { id: string; kode: string; namaBarang: string; stok: number }
 
 type TabelBarangKeluarProps = {
 	data: RiwayatItem[]
@@ -120,7 +117,7 @@ export function TabelBarangKeluar({
 							Catat Barang Keluar
 						</Button>
 					</DialogTrigger>
-					<DialogContent>
+					<DialogContent className="max-w-lg">
 						<DialogHeader>
 							<DialogTitle>Catat Barang Keluar</DialogTitle>
 						</DialogHeader>
@@ -137,13 +134,13 @@ export function TabelBarangKeluar({
 								No
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Waktu
+								Tanggal
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Kode
+								Penerima
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-								Nama Barang
+								Barang
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
 								Jumlah
@@ -154,12 +151,15 @@ export function TabelBarangKeluar({
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 								Dicatat oleh
 							</TableHead>
+							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
+								Aksi
+							</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{data.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={7}>
+								<TableCell colSpan={8}>
 									<EmptyState message="Belum ada riwayat barang keluar" />
 								</TableCell>
 							</TableRow>
@@ -168,9 +168,9 @@ export function TabelBarangKeluar({
 								<TableRow key={item.id} className="hover:bg-surface-raised">
 									<TableCell className="text-sm">{(page - 1) * pageSize + index + 1}</TableCell>
 									<TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-										{formatWaktu(item.createdAt)}
+										{formatWaktu(item.tanggalKeluar)}
 									</TableCell>
-									<TableCell className="text-sm font-mono">{item.barang.kode}</TableCell>
+									<TableCell className="text-sm">{item.namaPenerima}</TableCell>
 									<TableCell className="text-sm font-medium">
 										{item.barang.namaBarang}
 										{item.barang.deletedAt && (
@@ -184,6 +184,9 @@ export function TabelBarangKeluar({
 										{item.keterangan ?? "-"}
 									</TableCell>
 									<TableCell className="text-sm text-muted-foreground">{item.user.nama}</TableCell>
+									<TableCell className="text-right">
+										<HapusButton id={item.id} />
+									</TableCell>
 								</TableRow>
 							))
 						)}
@@ -200,5 +203,34 @@ export function TabelBarangKeluar({
 				/>
 			</DataTable>
 		</div>
+	)
+}
+
+function HapusButton({ id }: { id: string }) {
+	const [isPending, startTransition] = useTransition()
+
+	function handleHapus() {
+		if (!confirm("Batalkan transaksi ini? Stok akan di-reverse.")) return
+		startTransition(async () => {
+			const result = await hapusBarangKeluar(id)
+			if (result.success) {
+				toast.success("Transaksi berhasil dibatalkan")
+			} else {
+				toast.error(result.error)
+			}
+		})
+	}
+
+	return (
+		<Button
+			variant="ghost"
+			size="icon"
+			className="h-8 w-8"
+			disabled={isPending}
+			onClick={handleHapus}
+			aria-label="Batalkan transaksi"
+		>
+			<Trash2 className="h-4 w-4 text-muted-foreground hover:text-danger" />
+		</Button>
 	)
 }

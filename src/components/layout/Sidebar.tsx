@@ -3,12 +3,15 @@
 import {
 	ArrowDownToLine,
 	ArrowUpFromLine,
-	FileText,
+	FileDown,
+	FileUp,
 	Layers,
 	LayoutDashboard,
 	LogOut,
 	Package,
+	RotateCcw,
 	Siren,
+	Truck,
 	Users,
 } from "lucide-react"
 import Link from "next/link"
@@ -30,25 +33,15 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
 	{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+	{ label: "Supplier", href: "/dashboard/supplier", icon: Truck },
 	{ label: "Barang", href: "/dashboard/barang", icon: Package },
 	{ label: "Stok", href: "/dashboard/stok", icon: Layers },
-	{
-		label: "Barang Masuk",
-		href: "/dashboard/barang-masuk",
-		icon: ArrowDownToLine,
-	},
-	{
-		label: "Barang Keluar",
-		href: "/dashboard/barang-keluar",
-		icon: ArrowUpFromLine,
-	},
-	{ label: "Laporan", href: "/dashboard/laporan", icon: FileText },
-	{
-		label: "Pengguna",
-		href: "/dashboard/pengguna",
-		icon: Users,
-		managerOnly: true,
-	},
+	{ label: "Barang Masuk", href: "/dashboard/barang-masuk", icon: ArrowDownToLine },
+	{ label: "Barang Keluar", href: "/dashboard/barang-keluar", icon: ArrowUpFromLine },
+	{ label: "Retur", href: "/dashboard/retur", icon: RotateCcw },
+	{ label: "Laporan Masuk", href: "/dashboard/laporan-masuk", icon: FileDown },
+	{ label: "Laporan Keluar", href: "/dashboard/laporan-keluar", icon: FileUp },
+	{ label: "Pengguna", href: "/dashboard/pengguna", icon: Users, managerOnly: true },
 ]
 
 export function Sidebar({ nama, role }: SidebarProps) {
