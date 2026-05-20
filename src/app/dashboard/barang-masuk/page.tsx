@@ -1,3 +1,4 @@
+import { ArrowDownToLine } from "lucide-react"
 import { PageHeader } from "@/components/common/PageHeader"
 import { getBarangForSelect } from "@/features/barang/queries/barang.queries"
 import { TabelBarangMasuk } from "@/features/barang-masuk/components/TabelBarangMasuk"
@@ -24,7 +25,11 @@ export default async function BarangMasukPage({ searchParams }: BarangMasukPageP
 
 	return (
 		<div className="px-6 py-8 lg:px-8 flex flex-col gap-6 max-w-7xl mx-auto">
-			<PageHeader title="Barang Masuk" subtitle="Riwayat pencatatan penerimaan barang ke gudang" />
+			<PageHeader
+				icon={ArrowDownToLine}
+				title="Barang Masuk"
+				subtitle="Riwayat pencatatan penerimaan barang ke gudang"
+			/>
 			<TabelBarangMasuk
 				data={result.data}
 				total={result.total}

@@ -1,3 +1,4 @@
+import { Users } from "lucide-react"
 import { PageHeader } from "@/components/common/PageHeader"
 import { TabelPengguna } from "@/features/pengguna/components/TabelPengguna"
 import { getDaftarPengguna } from "@/features/pengguna/queries/pengguna.queries"
@@ -9,7 +10,11 @@ export default async function PenggunaPage() {
 
 	return (
 		<div className="px-6 py-8 lg:px-8 flex flex-col gap-6 max-w-7xl mx-auto">
-			<PageHeader title="Manajemen Pengguna" subtitle="Kelola akun pengguna sistem inventaris" />
+			<PageHeader
+				icon={Users}
+				title="Manajemen Pengguna"
+				subtitle="Kelola akun pengguna sistem inventaris"
+			/>
 			<TabelPengguna data={data} currentSupabaseId={session.user.id} />
 		</div>
 	)

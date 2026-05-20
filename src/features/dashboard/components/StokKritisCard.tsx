@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { StatusBadge } from "@/features/barang/components/StatusBadge"
 import type { StokKritisItem } from "@/features/dashboard/queries/dashboard.queries"
@@ -37,9 +37,10 @@ export function StokKritisCard({ data }: StokKritisCardProps) {
 				))}
 				<Link
 					href="/dashboard/stok"
-					className="text-xs text-primary font-medium hover:underline mt-1"
+					className="text-xs text-primary font-medium hover:underline mt-1 flex items-center gap-1"
 				>
 					Lihat semua stok
+					<ArrowRight className="h-3 w-3" />
 				</Link>
 			</div>
 		</div>

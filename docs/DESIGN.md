@@ -24,8 +24,8 @@
 
 | Token | Hex | HSL | Usage |
 |---|---|---|---|
-| `--primary` | `#3B8B72` | `161 40% 39%` | Primary CTA, active state, focus ring |
-| `--secondary` | `#6A816A` | `120 10% 46%` | Secondary actions, neutral badge, active border |
+| `--primary` | `#1F3F6E` | `215 55% 28%` | Primary CTA, active state, focus ring |
+| `--secondary` | `#666E7A` | `215 15% 46%` | Secondary actions, neutral badge, active border |
 | `--neutral` | `#444444` | `0 0% 27%` | Primary body text |
 
 ### 1.2 Semantic Colors
@@ -105,15 +105,15 @@ Place this entire block in `src/app/globals.css`, replacing the default Shadcn c
   --surface:        hsl(0 0% 100%);
   --surface-raised: hsl(0 0% 96%);
 
-  --primary:            hsl(161 40% 39%);
-  --primary-hover:      hsl(161 40% 33%);
+  --primary:            hsl(215 55% 28%);
+  --primary-hover:      hsl(215 55% 23%);
   --primary-foreground: hsl(0 0% 100%);
-  --primary-subtle:     hsl(161 40% 95%);
+  --primary-subtle:     hsl(215 55% 96%);
 
-  --secondary:            hsl(120 10% 46%);
-  --secondary-hover:      hsl(120 10% 40%);
+  --secondary:            hsl(215 15% 46%);
+  --secondary-hover:      hsl(215 15% 40%);
   --secondary-foreground: hsl(0 0% 100%);
-  --secondary-subtle:     hsl(120 10% 95%);
+  --secondary-subtle:     hsl(215 15% 95%);
 
   --success:            hsl(150 50% 35%);
   --success-foreground: hsl(0 0% 100%);
@@ -137,13 +137,13 @@ Place this entire block in `src/app/globals.css`, replacing the default Shadcn c
   --border:        hsl(0 0% 88%);
   --border-subtle: hsl(0 0% 93%);
   --input-bg:      hsl(0 0% 100%);
-  --ring:          hsl(161 40% 39%);
+  --ring:          hsl(215 55% 28%);
 
-  --sidebar-bg:     hsl(161 25% 16%);
-  --sidebar-text:   hsl(161 10% 85%);
-  --sidebar-muted:  hsl(161 10% 60%);
-  --sidebar-active: hsl(161 40% 39%);
-  --sidebar-border: hsl(161 20% 22%);
+  --sidebar-bg:     hsl(215 40% 14%);
+  --sidebar-text:   hsl(215 10% 85%);
+  --sidebar-muted:  hsl(215 10% 60%);
+  --sidebar-active: hsl(215 55% 38%);
+  --sidebar-border: hsl(215 30% 22%);
 }
 ```
 
@@ -278,7 +278,7 @@ The spacing system follows **4px (0.25rem)** multiples from Tailwind. The follow
   --shadow-card:   0 1px 3px hsl(0 0% 0% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.04);
   --shadow-raised: 0 4px 12px hsl(0 0% 0% / 0.08), 0 2px 4px hsl(0 0% 0% / 0.04);
   --shadow-modal:  0 20px 60px hsl(0 0% 0% / 0.15), 0 8px 20px hsl(0 0% 0% / 0.08);
-  --shadow-focus:  0 0 0 3px hsl(161 40% 39% / 0.25);
+  --shadow-focus:  0 0 0 3px hsl(215 55% 28% / 0.25);
 }
 ```
 

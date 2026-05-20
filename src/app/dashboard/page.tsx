@@ -1,3 +1,4 @@
+import { LayoutDashboard } from "lucide-react"
 import { PageHeader } from "@/components/common/PageHeader"
 import { KartuRingkasan } from "@/features/dashboard/components/KartuRingkasan"
 import { StokKritisCard } from "@/features/dashboard/components/StokKritisCard"
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
 	return (
 		<div className="px-6 py-8 lg:px-8 flex flex-col gap-8 max-w-7xl mx-auto">
 			<PageHeader
+				icon={LayoutDashboard}
 				title={`Selamat datang, ${user?.nama ?? "Pengguna"}`}
 				subtitle="Ringkasan informasi inventaris Maxxsiren"
 			/>

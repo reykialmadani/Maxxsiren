@@ -8,6 +8,7 @@ import {
 	LayoutDashboard,
 	LogOut,
 	Package,
+	Siren,
 	Users,
 } from "lucide-react"
 import Link from "next/link"
@@ -65,9 +66,12 @@ export function Sidebar({ nama, role }: SidebarProps) {
 			}}
 		>
 			<div
-				className="h-16 flex items-center px-4 border-b"
+				className="h-16 flex items-center gap-2 px-4 border-b"
 				style={{ borderColor: "var(--sidebar-border)" }}
 			>
+				<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground shrink-0">
+					<Siren className="h-4 w-4" />
+				</div>
 				<span className="text-lg font-bold tracking-wide">Maxxsiren</span>
 			</div>
 

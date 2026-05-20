@@ -1,3 +1,4 @@
+import { Package } from "lucide-react"
 import { PageHeader } from "@/components/common/PageHeader"
 import { KategoriSection } from "@/features/barang/components/KategoriSection"
 import { TabelBarang } from "@/features/barang/components/TabelBarang"
@@ -28,6 +29,7 @@ export default async function BarangPage({ searchParams }: BarangPageProps) {
 	return (
 		<div className="px-6 py-8 lg:px-8 flex flex-col gap-8 max-w-7xl mx-auto">
 			<PageHeader
+				icon={Package}
 				title="Manajemen Barang"
 				subtitle="Kelola data master barang dan kategori inventaris"
 			/>

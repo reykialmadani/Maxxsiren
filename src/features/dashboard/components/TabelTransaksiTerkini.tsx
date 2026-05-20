@@ -1,4 +1,4 @@
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react"
+import { ArrowDownToLine, ArrowUpFromLine, Clock } from "lucide-react"
 import { DataTable } from "@/components/common/DataTable"
 import { EmptyState } from "@/components/common/EmptyState"
 import {
@@ -19,7 +19,10 @@ type TabelTransaksiTerkiniProps = {
 export function TabelTransaksiTerkini({ data }: TabelTransaksiTerkiniProps) {
 	return (
 		<div>
-			<h2 className="text-lg font-semibold text-foreground mb-4">Transaksi Terkini</h2>
+			<h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+				<Clock className="h-5 w-5 text-primary" />
+				Transaksi Terkini
+			</h2>
 			<DataTable>
 				<Table>
 					<TableHeader>
