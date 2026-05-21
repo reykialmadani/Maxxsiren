@@ -28,6 +28,7 @@ export async function tambahBarang(formData: unknown): Promise<ActionResult> {
 			kategoriId: parsed.data.kategoriId,
 			satuan: parsed.data.satuan,
 			minStok: parsed.data.minStok,
+			gambarUrl: parsed.data.gambarUrl || null,
 			stok: 0,
 		},
 	})
@@ -60,6 +61,7 @@ export async function updateBarang(id: string, formData: unknown): Promise<Actio
 			kategoriId: parsed.data.kategoriId,
 			satuan: parsed.data.satuan,
 			minStok: parsed.data.minStok,
+			gambarUrl: parsed.data.gambarUrl || null,
 		},
 	})
 

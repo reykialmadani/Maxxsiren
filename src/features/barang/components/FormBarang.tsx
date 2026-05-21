@@ -15,6 +15,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { tambahBarang, updateBarang } from "@/features/barang/actions/barang.actions"
+import { SATUAN_OPTIONS } from "@/lib/constants"
 import { type BarangInput, barangSchema } from "@/lib/validations/barang.schema"
 
 type Kategori = { id: string; nama: string }
@@ -40,12 +41,14 @@ export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: F
 			kode: defaultValues?.kode ?? "",
 			namaBarang: defaultValues?.namaBarang ?? "",
 			kategoriId: defaultValues?.kategoriId ?? "",
-			satuan: defaultValues?.satuan ?? "",
+			satuan: defaultValues?.satuan ?? undefined,
 			minStok: defaultValues?.minStok ?? 0,
+			gambarUrl: defaultValues?.gambarUrl ?? "",
 		},
 	})
 
 	const kategoriId = watch("kategoriId")
+	const satuan = watch("satuan")
 
 	function onSubmit(data: BarangInput) {
 		startTransition(async () => {
@@ -75,7 +78,23 @@ export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: F
 					<Label htmlFor="satuan" className="text-sm font-medium">
 						Satuan
 					</Label>
-					<Input id="satuan" placeholder="Unit, Pcs, Roll" {...register("satuan")} />
+					<Select
+						value={satuan ?? ""}
+						onValueChange={(value) =>
+							setValue("satuan", value as BarangInput["satuan"], { shouldValidate: true })
+						}
+					>
+						<SelectTrigger id="satuan">
+							<SelectValue placeholder="Pilih satuan" />
+						</SelectTrigger>
+						<SelectContent>
+							{SATUAN_OPTIONS.map((s) => (
+								<SelectItem key={s} value={s}>
+									{s}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 					{errors.satuan && <p className="text-xs text-danger mt-1">{errors.satuan.message}</p>}
 				</div>
 			</div>
@@ -128,6 +147,19 @@ export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: F
 					/>
 					{errors.minStok && <p className="text-xs text-danger mt-1">{errors.minStok.message}</p>}
 				</div>
+			</div>
+
+			<div className="flex flex-col gap-1.5">
+				<Label htmlFor="gambarUrl" className="text-sm font-medium">
+					URL Gambar <span className="text-muted-foreground">(opsional)</span>
+				</Label>
+				<Input
+					id="gambarUrl"
+					type="url"
+					placeholder="https://example.com/gambar-barang.jpg"
+					{...register("gambarUrl")}
+				/>
+				{errors.gambarUrl && <p className="text-xs text-danger mt-1">{errors.gambarUrl.message}</p>}
 			</div>
 
 			<Button type="submit" disabled={isPending} className="w-full">

@@ -16,7 +16,7 @@ function formatTanggal(date: Date): string {
 
 export function generateLaporanMasukExcel(data: LaporanMasukData): ArrayBuffer {
 	const rows = [
-		...data.barangMasuk.map((item, i) => ({
+		...data.barangMasuk.map((item, i: number) => ({
 			No: i + 1,
 			Tanggal: formatTanggal(item.tanggalMasuk),
 			Tipe: "Barang Masuk",

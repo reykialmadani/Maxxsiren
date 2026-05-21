@@ -1,7 +1,8 @@
 "use client"
 
 import type { Prisma } from "@prisma/client"
-import { Archive, Pencil, Plus, Search, X } from "lucide-react"
+import { Archive, Eye, Package, Pencil, Plus, Search, X } from "lucide-react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useState, useTransition } from "react"
 import { toast } from "sonner"
@@ -33,6 +34,7 @@ import {
 	TableRow,
 } from "@/components/ui/table"
 import { arsipkanBarang } from "@/features/barang/actions/barang.actions"
+import type { BarangInput } from "@/lib/validations/barang.schema"
 import { FormBarang } from "./FormBarang"
 import { StatusBadge } from "./StatusBadge"
 
@@ -168,8 +170,9 @@ export function TabelBarang({
 											kode: editItem.kode,
 											namaBarang: editItem.namaBarang,
 											kategoriId: editItem.kategoriId,
-											satuan: editItem.satuan,
+											satuan: editItem.satuan as BarangInput["satuan"],
 											minStok: editItem.minStok,
+											gambarUrl: editItem.gambarUrl ?? "",
 										}
 									: undefined
 							}
@@ -186,6 +189,9 @@ export function TabelBarang({
 						<TableRow className="bg-surface-raised">
 							<TableHead className="w-12 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 								No
+							</TableHead>
+							<TableHead className="w-16 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+								Foto
 							</TableHead>
 							<TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 								Kode
@@ -216,7 +222,7 @@ export function TabelBarang({
 					<TableBody>
 						{data.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={9}>
+								<TableCell colSpan={10}>
 									<EmptyState message="Tidak ada barang" />
 								</TableCell>
 							</TableRow>
@@ -224,6 +230,19 @@ export function TabelBarang({
 							data.map((item, index) => (
 								<TableRow key={item.id} className="hover:bg-surface-raised">
 									<TableCell className="text-sm">{(page - 1) * pageSize + index + 1}</TableCell>
+									<TableCell>
+										{item.gambarUrl ? (
+											<img
+												src={item.gambarUrl}
+												alt={item.namaBarang}
+												className="w-8 h-8 object-cover rounded border border-border"
+											/>
+										) : (
+											<div className="w-8 h-8 rounded border border-border bg-surface-raised flex items-center justify-center">
+												<Package className="h-4 w-4 text-muted-foreground opacity-50" />
+											</div>
+										)}
+									</TableCell>
 									<TableCell className="text-sm font-mono">{item.kode}</TableCell>
 									<TableCell className="text-sm font-medium">{item.namaBarang}</TableCell>
 									<TableCell className="text-sm text-muted-foreground">
@@ -239,6 +258,13 @@ export function TabelBarang({
 									</TableCell>
 									<TableCell className="text-right">
 										<div className="flex items-center justify-end gap-1">
+											<Link
+												href={`/dashboard/barang/${item.id}`}
+												className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted transition-colors"
+												aria-label={`Detail ${item.namaBarang}`}
+											>
+												<Eye className="h-4 w-4 text-muted-foreground" />
+											</Link>
 											<Button
 												variant="ghost"
 												size="icon"
