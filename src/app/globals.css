@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @theme inline {
   --font-family-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
@@ -126,4 +127,11 @@ body {
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-family-sans);
+}
+
+[data-radix-dialog-content][data-state="open"] {
+	animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+[data-radix-dialog-content][data-state="closed"] {
+	animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
 }

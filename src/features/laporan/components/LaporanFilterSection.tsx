@@ -123,7 +123,7 @@ export function LaporanFilterSection({
 				</p>
 			</div>
 
-			<div className="flex flex-wrap gap-2">
+			<div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
 				{[
 					{ key: "7-hari", label: "7 Hari Terakhir" },
 					{ key: "bulan-ini", label: "Bulan Ini" },
@@ -141,30 +141,32 @@ export function LaporanFilterSection({
 				))}
 			</div>
 
-			<form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 items-end">
-				<div className="flex flex-col gap-1.5 flex-1">
-					<Label htmlFor="dateFrom" className="text-sm font-medium">
-						Tanggal Mulai
-					</Label>
-					<Input
-						id="dateFrom"
-						type="date"
-						value={localFrom}
-						onChange={(e) => setLocalFrom(e.target.value)}
-					/>
+			<form onSubmit={handleSubmit} className="flex flex-col gap-3">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+					<div className="flex flex-col gap-1.5">
+						<Label htmlFor="dateFrom" className="text-sm font-medium">
+							Tanggal Mulai
+						</Label>
+						<Input
+							id="dateFrom"
+							type="date"
+							value={localFrom}
+							onChange={(e) => setLocalFrom(e.target.value)}
+						/>
+					</div>
+					<div className="flex flex-col gap-1.5">
+						<Label htmlFor="dateTo" className="text-sm font-medium">
+							Tanggal Akhir
+						</Label>
+						<Input
+							id="dateTo"
+							type="date"
+							value={localTo}
+							onChange={(e) => setLocalTo(e.target.value)}
+						/>
+					</div>
 				</div>
-				<div className="flex flex-col gap-1.5 flex-1">
-					<Label htmlFor="dateTo" className="text-sm font-medium">
-						Tanggal Akhir
-					</Label>
-					<Input
-						id="dateTo"
-						type="date"
-						value={localTo}
-						onChange={(e) => setLocalTo(e.target.value)}
-					/>
-				</div>
-				<Button type="submit" variant="secondary" className="shrink-0">
+				<Button type="submit" variant="secondary" className="w-full sm:w-auto sm:self-end">
 					<Search className="h-4 w-4 mr-1" />
 					Tampilkan Data
 				</Button>
