@@ -39,8 +39,8 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "Barang Masuk", href: "/dashboard/barang-masuk", icon: ArrowDownToLine },
 	{ label: "Barang Keluar", href: "/dashboard/barang-keluar", icon: ArrowUpFromLine },
 	{ label: "Retur", href: "/dashboard/retur", icon: RotateCcw },
-	{ label: "Laporan Masuk", href: "/dashboard/laporan-masuk", icon: FileDown },
-	{ label: "Laporan Keluar", href: "/dashboard/laporan-keluar", icon: FileUp },
+	{ label: "Laporan Masuk", href: "/dashboard/laporan-masuk", icon: FileDown, managerOnly: true },
+	{ label: "Laporan Keluar", href: "/dashboard/laporan-keluar", icon: FileUp, managerOnly: true },
 	{ label: "Pengguna", href: "/dashboard/pengguna", icon: Users, managerOnly: true },
 ]
 

@@ -9,7 +9,7 @@ import {
 	getLaporanMasukSummary,
 	getLaporanMasukTrenHarian,
 } from "@/features/laporan/queries/laporan.queries"
-import { requireAuth } from "@/server/auth"
+import { requireRole } from "@/server/auth"
 
 type LaporanMasukPageProps = {
 	searchParams: Promise<{
@@ -32,8 +32,8 @@ function getDefaultDates() {
 }
 
 export default async function LaporanMasukPage({ searchParams }: LaporanMasukPageProps) {
-	const session = await requireAuth()
-	const role = (session.user.app_metadata.role as "MANAJER" | "STAF") ?? "STAF"
+	await requireRole("MANAJER")
+	const role = "MANAJER" as const
 
 	const params = await searchParams
 	const defaults = getDefaultDates()

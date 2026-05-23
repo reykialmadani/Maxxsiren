@@ -28,7 +28,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 				<Skeleton className="h-4 w-full" />
 			</div>
 			{Array.from({ length: rows }).map((_, i) => (
-				<div key={i} className="px-4 py-4 border-b border-border-subtle">
+				<div key={`row-${String(i)}`} className="px-4 py-4 border-b border-border-subtle">
 					<Skeleton className="h-4 w-full" />
 				</div>
 			))}
@@ -40,7 +40,10 @@ export function MetricCardsSkeleton({ count = 5 }: { count?: number }) {
 	return (
 		<div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-${count} gap-4`}>
 			{Array.from({ length: count }).map((_, i) => (
-				<div key={i} className="bg-surface rounded-xl border border-border p-6 flex flex-col gap-2">
+				<div
+					key={`metric-${String(i)}`}
+					className="bg-surface rounded-xl border border-border p-6 flex flex-col gap-2"
+				>
 					<Skeleton className="h-10 w-10 rounded-lg" />
 					<Skeleton className="h-4 w-24 mt-4" />
 					<Skeleton className="h-8 w-20 mt-1" />
@@ -79,7 +82,10 @@ export function StatCardsSkeleton({ count = 5 }: { count?: number }) {
 	return (
 		<div className={`grid grid-cols-2 sm:grid-cols-${count} gap-4`}>
 			{Array.from({ length: count }).map((_, i) => (
-				<div key={i} className="bg-surface rounded-lg border border-border p-4 flex flex-col gap-2">
+				<div
+					key={`stat-${String(i)}`}
+					className="bg-surface rounded-lg border border-border p-4 flex flex-col gap-2"
+				>
 					<Skeleton className="h-3 w-20" />
 					<Skeleton className="h-7 w-16" />
 				</div>
@@ -97,7 +103,7 @@ export function LaporanFilterSkeleton() {
 			</div>
 			<div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
 				{Array.from({ length: 4 }).map((_, i) => (
-					<Skeleton key={i} className="h-8 w-32" />
+					<Skeleton key={`preset-${String(i)}`} className="h-8 w-32" />
 				))}
 			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -113,7 +119,10 @@ export function SummaryCardsSkeleton({ count = 4 }: { count?: number }) {
 	return (
 		<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 			{Array.from({ length: count }).map((_, i) => (
-				<div key={i} className="bg-surface rounded-lg border border-border p-4 flex flex-col gap-2">
+				<div
+					key={`summary-${String(i)}`}
+					className="bg-surface rounded-lg border border-border p-4 flex flex-col gap-2"
+				>
 					<Skeleton className="h-4 w-24" />
 					<Skeleton className="h-6 w-16" />
 				</div>

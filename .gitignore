@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Personal planning notes & internal docs (keep local only)
+*.md
+
+# Exception: keep official documentation pushed to repo
+!README.md
+!AGENTS.md
+!ARCHITECTURE.md
+!CONTRIBUTING.md
+!docs/
+!docs/**/*.md
