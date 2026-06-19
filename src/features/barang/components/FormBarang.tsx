@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { tambahBarang, updateBarang } from "@/features/barang/actions/barang.actions"
 import { SATUAN_OPTIONS } from "@/lib/constants"
+import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { type BarangInput, barangSchema } from "@/lib/validations/barang.schema"
 
 type Kategori = { id: string; nama: string }
@@ -29,6 +30,10 @@ type FormBarangProps = {
 
 export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: FormBarangProps) {
 	const [isPending, startTransition] = useTransition()
+	const [isUploading, setIsUploading] = useState(false)
+	const [previewUrl, setPreviewUrl] = useState<string>(defaultValues?.gambarUrl ?? "")
+	const fileInputRef = useRef<HTMLInputElement>(null)
+
 	const {
 		register,
 		handleSubmit,
@@ -49,6 +54,35 @@ export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: F
 
 	const kategoriId = watch("kategoriId")
 	const satuan = watch("satuan")
+
+	async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0]
+		if (!file) return
+
+		setIsUploading(true)
+		try {
+			const supabase = createSupabaseBrowserClient()
+			const ext = file.name.split(".").pop()
+			const filename = `items/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+			const { error } = await supabase.storage.from("barang-images").upload(filename, file, {
+				cacheControl: "3600",
+				upsert: false,
+			})
+			if (error) throw error
+
+			const { data: urlData } = supabase.storage.from("barang-images").getPublicUrl(filename)
+			setValue("gambarUrl", urlData.publicUrl, { shouldValidate: true })
+			setPreviewUrl(urlData.publicUrl)
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : JSON.stringify(err)
+			toast.error(`Gagal mengunggah gambar: ${msg}`)
+			console.error("[upload-error]", err)
+			if (fileInputRef.current) fileInputRef.current.value = ""
+		} finally {
+			setIsUploading(false)
+		}
+	}
 
 	function onSubmit(data: BarangInput) {
 		startTransition(async () => {
@@ -150,19 +184,38 @@ export function FormBarang({ kategoriList, defaultValues, editId, onSuccess }: F
 			</div>
 
 			<div className="flex flex-col gap-1.5">
-				<Label htmlFor="gambarUrl" className="text-sm font-medium">
-					URL Gambar <span className="text-muted-foreground">(opsional)</span>
+				<Label htmlFor="gambarFile" className="text-sm font-medium">
+					Gambar Barang <span className="text-muted-foreground">(opsional)</span>
 				</Label>
-				<Input
-					id="gambarUrl"
-					type="url"
-					placeholder="https://example.com/gambar-barang.jpg"
-					{...register("gambarUrl")}
-				/>
+				<div className="flex items-center gap-3">
+					{previewUrl && (
+						<img
+							src={previewUrl}
+							alt="Preview"
+							className="w-12 h-12 object-cover rounded border border-border shrink-0"
+						/>
+					)}
+					<div className="flex-1">
+						<input
+							ref={fileInputRef}
+							id="gambarFile"
+							type="file"
+							accept="image/*"
+							disabled={isUploading}
+							onChange={handleImageUpload}
+							className="block w-full text-sm text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+						/>
+						{isUploading && (
+							<p className="text-xs text-muted-foreground mt-1">Mengunggah gambar...</p>
+						)}
+					</div>
+				</div>
+				{/* hidden field keeps the uploaded URL in the form state */}
+				<input type="hidden" {...register("gambarUrl")} />
 				{errors.gambarUrl && <p className="text-xs text-danger mt-1">{errors.gambarUrl.message}</p>}
 			</div>
 
-			<Button type="submit" disabled={isPending} className="w-full">
+			<Button type="submit" disabled={isPending || isUploading} className="w-full">
 				{isPending ? "Menyimpan..." : "Simpan"}
 			</Button>
 		</form>
